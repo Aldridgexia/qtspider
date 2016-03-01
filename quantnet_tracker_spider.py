@@ -2,9 +2,9 @@
 import urllib
 import urllib2
 import re
-import os
 
-class qtspider:
+#定义一个qtspider 的class
+class qtspider: 
 
 	def __init__(self):
 		self.page_num = 1
