@@ -98,10 +98,15 @@ class qtspider:
 			result_list.append(result)
 		#print result_list
 
+		
 		raw = [school_name_list,program_type_list,ugpa_list,GRE_Q_list,GRE_V_list,GRE_AWA_list,submitted_list,result_list]
 		tracker_list = np.array(raw)
 		tracker_list = np.transpose(tracker_list)
-		print tracker_list
+		#print tracker_list
+		
+		for i in range(20):
+			print str(i+1)+'.',school_name_list[i],program_type_list[i],ugpa_list[i],GRE_Q_list[i],GRE_V_list[i],GRE_AWA_list[i],submitted_list[i],result_list[i]
+
 		'''
 		#r1 至r7 为分割后的正则表达式删选方法
 		r1 = '<div class="listBlock program">.*?<span class="programTitle"><a.*?>(.*?)</a>.*?<span class="type">(.*?)</span>.*?</div>'
