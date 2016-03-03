@@ -115,4 +115,7 @@ class qtspider:
 			print str(i+1)+'.',school_name_list[i],program_type_list[i],ugpa_list[i],GRE_Q_list[i],GRE_V_list[i],GRE_AWA_list[i],submitted_list[i],result_list[i]
 
 spider = qtspider()
-spider.getPageContent(raw_input('input page number: '))
+targetNum = raw_input('input page number: ')
+for i in range(1,int(targetNum)+1):
+	print "Page " + str(i)
+	spider.getPageContent(i)
