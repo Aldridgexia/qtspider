@@ -114,8 +114,14 @@ class qtspider:
 		for i in range(20):
 			print str(i+1)+'.',school_name_list[i],program_type_list[i],ugpa_list[i],GRE_Q_list[i],GRE_V_list[i],GRE_AWA_list[i],submitted_list[i],result_list[i]
 
+		return tracker_list
+
 spider = qtspider()
 targetNum = raw_input('input page number: ')
 for i in range(1,int(targetNum)+1):
 	print "Page " + str(i)
-	spider.getPageContent(i)
+	tracker_list = spider.getPageContent(i)
+
+#将tracker_list 写入文件
+with open('/Users/Aldridge/qtspider/trackers.txt','w') as f:
+	f.write(tracker_list)
