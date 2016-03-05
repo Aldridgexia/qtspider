@@ -116,6 +116,7 @@ class qtspider:
 		return tracker_list
 
 spider = qtspider()
+#要求用户输入想要爬取的页数
 targetNum = raw_input('input page number: ')
 for i in range(1,int(targetNum)+1):
 	print "Page " + str(i)
