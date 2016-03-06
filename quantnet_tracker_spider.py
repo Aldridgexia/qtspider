@@ -34,15 +34,12 @@ class qtspider:
 		school_name = tracker_soup.find_all('span',{'class':'programTitle'})
 		for school in school_name:
 			school_name_list.append(school.text)
-		#print school_name_list
 
 		#获取项目类型列表
 		program_type_list = []
 		program_types = tracker_soup.find_all('span',{'class':'type'})
 		for program_type in program_types:
-			#print program_type.text
 			program_type_list.append(program_type.text)
-		#print program_type_list
 
 		#获取ugpa 列表
 		ugpa_list = []
@@ -50,9 +47,7 @@ class qtspider:
 		for ugpa in ugpas:
 			ugpa = str(ugpa.text)
 			ugpa = ugpa.replace('\n','')
-			#print ugpa
 			ugpa_list.append(ugpa)
-		#print ugpa_list
 
 		#获取gre 数学成绩列表
 		GRE_Q_list = []
@@ -60,9 +55,7 @@ class qtspider:
 		for GRE_Q in GRE_Qs:
 			GRE_Q = str(GRE_Q.text)
 			GRE_Q = GRE_Q.replace('\n','')
-			#print GRE_Q.text
 			GRE_Q_list.append(GRE_Q)
-		#print GRE_Q_list
 
 		#获取gre 语文成绩列表
 		GRE_V_list = []
@@ -70,9 +63,7 @@ class qtspider:
 		for GRE_V in GRE_Vs:
 			GRE_V = str(GRE_V.text)
 			GRE_V = GRE_V.replace('\n','')
-			#print GRE_V.text
 			GRE_V_list.append(GRE_V)
-		#print GRE_V_list
 
 		#获取gre 作文成绩列表
 		GRE_AWA_list = []
@@ -80,9 +71,7 @@ class qtspider:
 		for GRE_AWA in GRE_AWAs:
 			GRE_AWA = str(GRE_AWA.text)
 			GRE_AWA = GRE_AWA.replace('\n','')
-			#print GRE_AWA.text
 			GRE_AWA_list.append(GRE_AWA)
-		#print GRE_AWA_list
 
 		#获取提交状态列表
 		submitted_list = []
@@ -92,7 +81,6 @@ class qtspider:
 			submitted = submitted.replace('\n','')
 			submitted = submitted.replace(' ','')
 			submitted_list.append(submitted)
-		#print submitted_list
 
 		#获取录取结果列表
 		result_list = []
@@ -101,13 +89,12 @@ class qtspider:
 			result = str(result.text)
 			result = result.replace('\n','').replace('\t','')
 			result_list.append(result)
-		#print result_list
+		#待处理，将三个信息分开展示
 
 		#使用numpy.array 储存以上列表结果并转置 
 		raw = [school_name_list,program_type_list,ugpa_list,GRE_Q_list,GRE_V_list,GRE_AWA_list,submitted_list,result_list]
 		tracker_list = np.array(raw)
 		tracker_list = np.transpose(tracker_list)
-		#print tracker_list
 		
 		#打印出易观察的tracker 信息
 		for i in range(20):
