@@ -1,4 +1,8 @@
 # qtspider
 
-一个爬取quantnet tracker 的爬虫。
-使用BeautifulSoup 和re 来处理原始数据，使用numpy 来储存爬取结果。
+* Offer three types of spiders to crawl trackers on quantnet.
+* Three types are:
+1. BeautifulSoup
+2. re
+3. xpath
+* The results of the spider using xpath are saved in result.csv.
