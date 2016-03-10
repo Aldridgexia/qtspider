@@ -1,9 +1,11 @@
 import requests
 from lxml import etree
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import sys
 reload(sys)
 
 sys.setdefaultencoding('utf-8')
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def towrite(itemdict):
 	f.writelines(itemdict['program_name'] + ', ' + itemdict['program_type'] + '\n')
@@ -11,10 +13,19 @@ def towrite(itemdict):
 	f.writelines(itemdict['submitted'] + ', ' + itemdict['interview'] + '\n')
 	f.writelines(itemdict['result'] + ', ' + itemdict['receive_time'] + ', ' + itemdict['days_to_result'] + '\n' )
 	f.writelines(unicode(itemdict['note']) + '\n')
-	f.writelines('=====================\n')
+	# f.writelines('=====================\n')
 
 def qtspider(url):
-	html = requests.get(url)
+	headers={
+	"authority":"www.quantnet.com",
+    "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36",
+	"scheme":"https",
+	"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+	"accept-encoding":"gzip, deflate, sdch",
+	"accept-language":"zh-CN,zh;q=0.8,en;q=0.6",
+	"cache-control":"max-age=0",
+	}
+	html = requests.get(url, headers = headers, verify = False)
 	selector = etree.HTML(html.text)
 	trackers = selector.xpath('//*[@class="applicationListItem"]')
 	item = {}
@@ -51,12 +62,12 @@ def qtspider(url):
 			item['receive_time'] = receive_time
 			item['days_to_result'] = days_to_result[0].strip(' \n\t\n ')
 			item['note'] = note[0]
-			print item 
+			# print item 
 			towrite(item)
 
 if __name__ == '__main__':
-	with open('/Users/Aldridge/qtspider/result.txt','a') as f:
-		for i in range(1,11):
+	with open('/Users/Aldridge/qtspider/result.csv','a') as f:
+		for i in range(1,21):
 			new_page = 'https://www.quantnet.com/tracker/?page=' + str(i)
 			print 'processing page %d...'%i
 			qtspider(new_page)
