@@ -1,6 +1,8 @@
 import requests
 from lxml import etree
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import time
+from multiprocessing import Pool
 import sys
 reload(sys)
 
@@ -9,9 +11,9 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def towrite(itemdict):
 	f.writelines(itemdict['program_name'] + ', ' + itemdict['program_type'] + '\n')
-	f.writelines(itemdict['ugpa'] + ', ' + itemdict['gre_q'] + ', ' + itemdict['gre_v'] + ', ' + itemdict['gre_awa'] + '\n' )
-	f.writelines(itemdict['submitted'] + ', ' + itemdict['interview'] + '\n')
 	f.writelines(itemdict['result'] + ', ' + itemdict['receive_time'] + ', ' + itemdict['days_to_result'] + '\n' )
+	f.writelines(itemdict['submitted'] + ', ' + itemdict['interview'] + '\n')
+	f.writelines(itemdict['ugpa'] + ', ' + itemdict['gre_q'] + ', ' + itemdict['gre_v'] + ', ' + itemdict['gre_awa'] + '\n' )
 	f.writelines(unicode(itemdict['note']) + '\n')
 	# f.writelines('=====================\n')
 
@@ -66,9 +68,17 @@ def qtspider(url):
 			towrite(item)
 
 if __name__ == '__main__':
+	time_start = time.time()
 	with open('/Users/Aldridge/qtspider/result.csv','a') as f:
-		for i in range(1,21):
-			new_page = 'https://www.quantnet.com/tracker/?page=' + str(i)
-			print 'processing page %d...'%i
-			qtspider(new_page)
+		urls = []
+		for i in range(1,101):
+			new_url = 'https://www.quantnet.com/tracker/?page=' + str(i)
+			urls.append(new_url)
+		print "Processing...please patiently wait~"
+		pool = Pool(2)
+		pool.map(qtspider,urls)
+		pool.close()
+		pool.join()
+	time_end = time.time()
+	print 'total time: ' + str(time_end - time_start) + ' s.'
 
