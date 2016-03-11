@@ -6,17 +6,19 @@ from multiprocessing import Pool
 import sys
 reload(sys)
 
+#解决编码问题和禁用非安全警告
 sys.setdefaultencoding('utf-8')
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+#向文件中逐行写入数据
 def towrite(itemdict):
 	f.writelines(itemdict['program_name'] + ', ' + itemdict['program_type'] + '\n')
 	f.writelines(itemdict['result'] + ', ' + itemdict['receive_time'] + ', ' + itemdict['days_to_result'] + '\n' )
 	f.writelines(itemdict['submitted'] + ', ' + itemdict['interview'] + '\n')
 	f.writelines(itemdict['ugpa'] + ', ' + itemdict['gre_q'] + ', ' + itemdict['gre_v'] + ', ' + itemdict['gre_awa'] + '\n' )
 	f.writelines(unicode(itemdict['note']) + '\n')
-	# f.writelines('=====================\n')
 
+#爬虫主体，使用xpath 提取信息并储存至item 中
 def qtspider(url):
 	headers={
 	"authority":"www.quantnet.com",
@@ -64,7 +66,6 @@ def qtspider(url):
 			item['receive_time'] = receive_time
 			item['days_to_result'] = days_to_result[0].strip(' \n\t\n ')
 			item['note'] = note[0]
-			# print item 
 			towrite(item)
 
 if __name__ == '__main__':
@@ -80,5 +81,6 @@ if __name__ == '__main__':
 		pool.close()
 		pool.join()
 	time_end = time.time()
+	#计算并显示爬取所需总时间
 	print 'total time: ' + str(time_end - time_start) + ' s.'
 
