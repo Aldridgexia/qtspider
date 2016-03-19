@@ -1,18 +1,30 @@
 # -*- coding: utf-8 -*-
 import requests
 import time
-import sys
-reload(sys)
 import numpy as np
 import pymongo
 import json
 from lxml import etree
 from multiprocessing import Pool
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from bson.objectid import ObjectId 
 
 #解决编码问题和禁用非安全警告
+import sys
+reload(sys)
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 sys.setdefaultencoding('utf-8')
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+#解决SSLError 问题
+import ssl
+from functools import wraps
+def sslwrap(func):
+    @wraps(func)
+    def bar(*args, **kw):
+        kw['ssl_version'] = ssl.PROTOCOL_TLSv1
+        return func(*args, **kw)
+    return bar
+ssl.wrap_socket = sslwrap(ssl.wrap_socket)
 
 #向文件中逐行写入数据
 def towrite(itemdict):
@@ -116,9 +128,6 @@ def qtspider(urls):
 		# print "Parsing page %s" % page_num
 		trackers = selector.xpath('//*[@class="applicationListItem"]')
 		item = {}
-		# connection = pymongo.MongoClient()
-		# db = connection.quantnet_tracker
-		# post_info = db.trackers
 		for tracker in trackers:
 			def isempty(somelist):
 				if somelist!=[]:
@@ -157,8 +166,9 @@ def qtspider(urls):
 			item['receive_time'] = receive_time[0]
 			item['days_to_result'] = days_to_result[0].strip(' \n\t\n ')
 			item['note'] = note[0]
-			towrite(item)
-			# post_info.insert(item)
+			# towrite(item)
+			item['_id'] = ObjectId()
+			post_info.insert_one(item)
 		i += 1
 		if (i-1)%10==0:
 			print "break for 1.5s."
@@ -167,19 +177,25 @@ def qtspider(urls):
 #执行主程序
 if __name__ == '__main__':
 	time_start = time.time()
+	urls = []
+	# for i in range(161,249):
+	for i in range(1,249):
+		new_url = 'https://www.quantnet.com/tracker/?page=' + str(i)
+		urls.append(new_url)
+	#写入csv 文件
 	with open('/Users/Aldridge/qtspider/result.csv','a') as f:
-		urls = []
-		# for i in range(118,120):
-		for i in range(1,249):
-			new_url = 'https://www.quantnet.com/tracker/?page=' + str(i)
-			urls.append(new_url)
 		# print "Processing...please patiently wait~"
 		# pool = Pool(2)
 		# pool.map(qtspider,urls)
 		# pool.close()
 		# pool.join()
 		qtspider(urls)
-
+	#链接mongodb
+	client = pymongo.MongoClient()
+	db = client.quantnet_tracker
+	post_info = db.trackers
+	qtspider(urls)
+	
 	time_end = time.time()
 
 	#计算并显示爬取所需总时间
