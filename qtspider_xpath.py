@@ -6,7 +6,8 @@ import pymongo
 import json
 from lxml import etree
 from multiprocessing import Pool
-from bson.objectid import ObjectId 
+from bson.objectid import ObjectId
+from qtlogin import getcookies
 
 #解决编码问题和禁用非安全警告
 import sys
@@ -69,40 +70,12 @@ def getproxies(num):
 	proxies["https"] = proxies_pool[num]
 	return proxies
 
-#获取cookies
-def getcookies(num):
-	headers = {
-	"User-Agent":"",
-	"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-	"accept-encoding":"gzip, deflate, sdch",
-	"accept-language":"zh-CN,zh;q=0.8,en;q=0.6",
-	"origin":"https://www.quantnet.com",
-	"referer":"https://www.quantnet.com/",
-	"upgrade-insecure-requests":"1",
-	}
-	headers['User-Agent'] = gethdrs(num)['User-Agent']
-	proxies = getproxies(num)
-	url = 'https://www.quantnet.com/login/login'
-	data = json.dumps({
-		'login':'gduroy@163.com',
-		'register':'0',
-		'password':'055010',
-		'remember':'1',
-		'cookie_check':'1',
-		'_xfToken':'',
-		'redirect':'https://www.quantnet.com/'
-	})
-	s = requests.session()
-	res = s.post(url,headers = headers, data = data, proxies = proxies, verify = False)
-	m_cookies = res.cookies
-	return m_cookies
-
 #爬虫主体，使用xpath 提取信息并储存至item 中
 def qtspider(urls):
 	judge_num = np.random.randint(0,5)
 	headers = gethdrs(judge_num)
 	proxies = getproxies(judge_num)
-	m_cookies = getcookies(judge_num)
+	m_cookies = getcookies()
 	s = requests.session()
 	i = 1
 	for url in urls:
@@ -168,7 +141,7 @@ def qtspider(urls):
 			item['note'] = note[0]
 			# towrite(item)
 			item['_id'] = ObjectId()
-			post_info.insert_one(item)
+			# post_info.insert_one(item)
 		i += 1
 		if (i-1)%10==0:
 			print "break for 1.5s."
@@ -176,27 +149,24 @@ def qtspider(urls):
 			
 #执行主程序
 if __name__ == '__main__':
-	time_start = time.time()
+	time_start = time.time() #运行开始时间
+	#生成链接列表
 	urls = []
-	# for i in range(161,249):
 	for i in range(1,249):
 		new_url = 'https://www.quantnet.com/tracker/?page=' + str(i)
 		urls.append(new_url)
+
 	#写入csv 文件
-	with open('/Users/Aldridge/qtspider/result.csv','a') as f:
-		# print "Processing...please patiently wait~"
-		# pool = Pool(2)
-		# pool.map(qtspider,urls)
-		# pool.close()
-		# pool.join()
-		qtspider(urls)
-	#链接mongodb
+	# with open('/Users/Aldridge/qtspider/result.csv','a') as f:
+	# 	qtspider(urls)
+
+	#连接mongodb
 	client = pymongo.MongoClient()
 	db = client.quantnet_tracker
 	post_info = db.trackers
 	qtspider(urls)
 	
-	time_end = time.time()
+	time_end = time.time() #运行结束时间
 
 	#计算并显示爬取所需总时间
 	print 'total time: ' + str(time_end - time_start) + ' s.'
