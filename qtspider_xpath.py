@@ -60,13 +60,7 @@ def getproxies(num):
 	proxies = {
     	"https":"",	
     }
-	proxies_pool = [
-		"http://52.10.153.135:8083/",
-		"http://52.91.159.67:8083/",
-		"http://193.194.69.36:3128/",
-		"http://217.20.83.130:3128/",
-		"http://213.5.135.38:8080/",
-	]
+	proxies_pool = list(np.load('proxies.npy'))
 	proxies["https"] = proxies_pool[num]
 	return proxies
 
@@ -141,7 +135,19 @@ def qtspider(urls):
 			item['note'] = note[0]
 			# towrite(item)
 			item['_id'] = ObjectId()
-			# post_info.insert_one(item)
+
+			cursor = post_info.find({'program_name':'Cornell FE', 'receive_time':'(2016-03-08)','ugpa':'3.79','submitted':'2015-11-30'})
+			for topline in cursor:
+				cmp_topline = topline.copy()
+				del cmp_topline['_id']
+				cmp_item = item.copy()
+				del cmp_item['_id']
+				if cmp(cmp_topline, cmp_item) != 0:
+					print "Item inserting..."
+					post_info.insert_one(item)
+				else:
+					print "Already in database!"
+					break
 		i += 1
 		if (i-1)%10==0:
 			print "break for 1.5s."
@@ -152,7 +158,8 @@ if __name__ == '__main__':
 	time_start = time.time() #运行开始时间
 	#生成链接列表
 	urls = []
-	for i in range(1,249):
+	for i in range(1,7):
+	# for i in range(1,249):
 		new_url = 'https://www.quantnet.com/tracker/?page=' + str(i)
 		urls.append(new_url)
 
