@@ -3,7 +3,10 @@ import re
 import time
 import random
 import requests
+import pandas as pd 
+from pandas import DataFrame, Series
 from qtlogin import getcookies
+# from qtlogin_local import getcookies
 from bs4 import BeautifulSoup as BS
 
 # generate headers
@@ -85,3 +88,7 @@ for idx, url in enumerate(urls):
         print('Intentional break for %is' % nap)
 end = time.time()
 print('Total parsing time: %f' % (end - start))
+
+# store trackers into DataFrame
+df_trackers = DataFrame(trackers)
+print(df_trackers.head(5))
