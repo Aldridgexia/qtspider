@@ -91,4 +91,8 @@ print('Total parsing time: %f' % (end - start))
 
 # store trackers into DataFrame
 df_trackers = DataFrame(trackers)
+# reorder columns
+df_trackers = df_trackers[['program_name','program_type','status',\
+                'submitted','days_to_result','days_elapsed','ugpa',\
+                'gre_q','gre_v','gre_awa','interview','will_join','note']]
 print(df_trackers.head(5))
